@@ -1,102 +1,48 @@
-﻿using Backend.ServiceModel;
-using Backend.ServiceInterface.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+using Backend.ServiceInterface.context;
+using Backend.ServiceInterface.Models;
+using Backend.ServiceInterface.Repository;
 
-namespace EmployeeBackend.Repository
+namespace Backend.Repository
 {
-    internal class EmployeeRepo : IEmployeeRepo
+    public class EmployeeRepo : IEmployeeRepo
     {
         //private EmployeeContext db = new EmployeeContext();
-
-        private readonly EmployeeContext _context;
-        public EmployeeRepo()
+        private readonly IRepository<Employee> employeeRep;
+        
+        public EmployeeRepo(IRepository<Employee> employeeRepository)
         {
-            _context = new EmployeeContext();
-        }
-        public EmployeeRepo(EmployeeContext context)
-        {
-            _context = context;
+            this.employeeRep = employeeRepository; 
         }
 
+        
 
-
-        public Backend.ServiceInterface.Models.Employee GetEmployee(string Id)
+        public IEnumerable<Employee> GetEmployees()
         {
-            Backend.ServiceInterface.Models.Employee emp = _context.Employees.Where(x => x.Id.ToString() == Id).FirstOrDefault();
-            return emp;
-        }
-
-        public IEnumerable<Backend.ServiceInterface.Models.Employee> GetEmployees()
-        {
-            return _context.Employees.ToList();
+            return employeeRep.Get();
             
         }
 
-        public Backend.ServiceInterface.Models.Employee PostEmployee(EmployeeRequestDto Dto)
+        public int PostEmployee(Employee _postObj)
         {
-            Backend.ServiceInterface.Models.Employee newObj = new Backend.ServiceInterface.Models.Employee {
-                                            Address = Dto.Address,
-                                            Designation = Dto.Designation,
-                                            Name = Dto.Name,
-                                            Mobile = Dto.Mobile };
-            _context.Employees.Add(newObj);
-            _context.SaveChanges();
-            return newObj;
+            employeeRep.Insert(_postObj);
+            return 1;
+            
+        }
+
+        public int UpdateEmployee(Employee Dto)
+        {
+            employeeRep.Update(Dto);
+            return 1;
 
         }
 
-        public int UpdateEmployee(EmployeeRequestDto Dto)
+        public int DeleteEmployee(Employee Dto)
         {
-            Backend.ServiceInterface.Models.Employee newObj = _context.Employees.Where(x => x.Id == Dto.Id).FirstOrDefault();
-            if (newObj != null)
-            {
-                newObj.Name = Dto.Name;
-                newObj.Address = Dto.Address;
-                newObj.Designation = Dto.Designation;
-                newObj.Mobile = Dto.Mobile;
-                return _context.SaveChanges();
-            }
-            else
-            {
-                return 0;
-            }           
-
-        }
-
-        public int DeleteEmployee(string Id)
-        {
-            Backend.ServiceInterface.Models.Employee newObj = _context.Employees.Where(x => x.Id.ToString() == Id).FirstOrDefault();
-            if (newObj != null)
-            {
-                _context.Employees.Remove(newObj);
-               return _context.SaveChanges();
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        private bool disposed = false;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+            employeeRep.Delete(Dto);
+            return 1;
+        }        
     }
 }

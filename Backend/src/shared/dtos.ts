@@ -89,7 +89,7 @@ export class HelloResponse
 
 
 export class EmployeeResonseDto {
-    public result: Array<Employee>;
+    public Employees: Array<EmployeeRequestDto>;
 
     public constructor(init?: Partial<EmployeeResonseDto>) { (Object as any).assign(this, init); }
 }

@@ -2,6 +2,10 @@ using Funq;
 using ServiceStack;
 using Backend.ServiceInterface;
 using System.Data.Entity;
+using Backend.ServiceInterface.context;
+using Backend.ServiceInterface.service;
+using Backend.ServiceInterface.Repository;
+using Backend.Repository;
 using Backend.ServiceInterface.Models;
 
 [assembly: HostingStartup(typeof(Backend.AppHost))]
@@ -14,7 +18,8 @@ public class AppHost : AppHostBase, IHostingStartup
     public void Configure(IWebHostBuilder builder) => builder
         .ConfigureServices(services => {
             // Configure ASP.NET Core IOC Dependencies
-        });
+        }        
+        );
 
     public AppHost() : base("Backend", typeof(MyServices).Assembly) {}
 
@@ -26,9 +31,15 @@ public class AppHost : AppHostBase, IHostingStartup
             EnableSpaFallback = true
         });
         
+        
         Database.SetInitializer<EmployeeContext>
-            (new DropCreateDatabaseIfModelChanges<EmployeeContext>());
+            (new CreateDatabaseIfNotExists<EmployeeContext>());
+        
 
+        container.RegisterAs<EmployeeContext, IDbContext>();
+        container.RegisterAs<Backend.ServiceInterface.Repository.Repository<Employee>, Backend.ServiceInterface.Repository.IRepository<Employee>>();
+        container.RegisterAs<EmployeeRepo, IEmployeeRepo>();
+        container.RegisterAs<EmployeeService, IEmployeeService>();
         SetConfig(new HostConfig {
             AddRedirectParamsToQueryString = true,
         });

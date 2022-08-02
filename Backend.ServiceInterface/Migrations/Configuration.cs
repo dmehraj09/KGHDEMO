@@ -5,20 +5,19 @@
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Backend.ServiceInterface.Models.EmployeeContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Backend.ServiceInterface.context.EmployeeContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(Backend.ServiceInterface.Models.EmployeeContext context)
+        protected override void Seed(Backend.ServiceInterface.context.EmployeeContext context)
         {
-            context.Employees.AddOrUpdate(x => x.Id,
-            new Models.Employee() { Id = 1, Name = "Jane Austen", Address = "Sopore", Designation = "TL", Mobile = "90988" },
-            new Models.Employee() { Id = 2, Name = "Charles Dickens", Address = "Sopore", Designation = "TL", Mobile = "90988" },
-            new Models.Employee() { Id = 3, Name = "Miguel de Cervantes", Address = "Sopore", Designation = "TL", Mobile = "90988" }
-        );
+            //  This method will be called after migrating to the latest version.
+
+            //  You can use the DbSet<T>.AddOrUpdate() helper extension method
+            //  to avoid creating duplicate seed data.
         }
     }
 }

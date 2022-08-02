@@ -7,11 +7,8 @@ using System.Web;
 
 namespace Backend.ServiceInterface.Models
 {
-    public class Employee
-    {
-        [AutoIncrement]
-        public int Id { get; set; }
-        
+    public class Employee : BaseEntity
+    {        
         public string Name { get; set; }
 
         public string Address { get; set; }

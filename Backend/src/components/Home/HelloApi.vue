@@ -12,7 +12,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="employee in employees" :key="employee.id">
+                    <tr v-for="employee in employees.employees" :key="employee.id">
                         <td v-if="editing === employee.id">
                             <input type="text" v-model="employee.name" />
                         </td>

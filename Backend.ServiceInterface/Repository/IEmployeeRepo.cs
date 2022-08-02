@@ -1,20 +1,14 @@
-﻿using Backend.ServiceModel;
-using Backend.ServiceInterface.Models;
-using System;
+﻿using Backend.ServiceInterface.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EmployeeBackend.Repository
+namespace Backend.Repository
 {
-    internal interface IEmployeeRepo
+    public interface IEmployeeRepo
     {
-        IEnumerable<Backend.ServiceInterface.Models.Employee> GetEmployees();
-        Backend.ServiceInterface.Models.Employee GetEmployee(string Id);
+        IEnumerable<Employee> GetEmployees();      
 
-        Backend.ServiceInterface.Models.Employee PostEmployee(EmployeeRequestDto Dto);
-        int UpdateEmployee(EmployeeRequestDto Dto);
-        int DeleteEmployee(string Id);
+        int PostEmployee(Employee _postObj);
+        int UpdateEmployee(Employee Dto);
+        int DeleteEmployee(Employee Dto);
     }
 }
