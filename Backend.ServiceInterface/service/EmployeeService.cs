@@ -3,6 +3,7 @@ using Backend.ServiceModel;
 using Backend.Repository;
 using System.Collections.Generic;
 using System.Linq;
+using Backend.ServiceInterface.Converters;
 
 namespace Backend.ServiceInterface.service
 {
@@ -33,45 +34,24 @@ namespace Backend.ServiceInterface.service
         }
 
 
-        public int PostEmployee(EmployeeRequestDto Dto)
-        {
-            Employee _postobj = new Employee
-            {
-                Address = Dto.Address,
-                Designation = Dto.Designation,
-                Name = Dto.Name,
-                Mobile = Dto.Mobile
-            };
-          return repository.PostEmployee(_postobj);
-
-                     
-
+        public void PostEmployee(EmployeeRequestDto dto)
+        {            
+            repository.PostEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
         }
 
-        public int UpdateEmployee(EmployeeRequestDto Dto)
+        
+
+        public void UpdateEmployee(EmployeeRequestDto dto)
         {
-            Employee _postobj = new Employee
-            {
-                Id = Dto.Id,
-                Address = Dto.Address,
-                Designation = Dto.Designation,
-                Name = Dto.Name,
-                Mobile = Dto.Mobile
-            };
-            return repository.UpdateEmployee(_postobj);
+            
+            repository.UpdateEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
         }
 
-        public int DeleteEmployee(EmployeeRequestDto Dto)
+        public void DeleteEmployee(EmployeeRequestDto dto)
         {
-            Employee _postobj = new Employee
-            {
-                Id = Dto.Id,
-                Address = Dto.Address,
-                Designation = Dto.Designation,
-                Name = Dto.Name,
-                Mobile = Dto.Mobile
-            };
-            return repository.DeleteEmployee(_postobj);
+          repository.DeleteEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
         }
+
+       
     }
 }

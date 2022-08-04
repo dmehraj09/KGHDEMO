@@ -9,39 +9,38 @@ namespace Backend.ServiceInterface.Services
 
     public class EmployeeAPI : Service
     {
-        private readonly IEmployeeService service;
+        private readonly IEmployeeService _service;
 
         public EmployeeAPI(IEmployeeService service)
         {
-            this.service = service;
+            this._service = service;
         }      
 
 
-        public EmployeeResonseDto Get(EmployeeRequestDto Dto)        
+        public EmployeeResonseDto Get(EmployeeRequestDto dto)        
         {            
             
-                var result = service.GetEmployees();
+                var result = _service.GetEmployees();
                 return result;
            
             
         }
 
-        public int Post(EmployeeRequestDto dto)
+        public void Post(EmployeeRequestDto dto)
         {
-            var result = service.PostEmployee(dto);
-            return result;
+            _service.PostEmployee(dto);
+            
         }
 
-        public int Put(EmployeeRequestDto dto)
+        public void Put(EmployeeRequestDto dto)
         {
-            var result = service.UpdateEmployee(dto);
-            return result;
+            _service.UpdateEmployee(dto);            
         }
 
-        public int Delete(EmployeeRequestDto dto)
+        public void Delete(EmployeeRequestDto dto)
         {
-            var result = service.DeleteEmployee(dto);
-            return result;
+            _service.DeleteEmployee(dto);
+           
         }
     }    
 

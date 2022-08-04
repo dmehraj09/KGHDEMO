@@ -15,6 +15,7 @@ namespace Backend.ServiceInterface.Repository
     {
         private IDbContext _context;
         private IDbSet<T> _entities;
+        private bool _isDisposed;
 
         public Repository(IDbContext context)
         {
@@ -29,30 +30,33 @@ namespace Backend.ServiceInterface.Repository
 
         public void Insert(T entity)
         {
-            try
-            {
-                if (entity == null)
+            
+                try
                 {
-                    throw new ArgumentNullException("entity");
-                }
-                this.Entities.Add(entity);
-                this._context.SaveChanges();
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                var msg = string.Empty;
-
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
+                    if (entity == null)
                     {
-                        msg += string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage) + Environment.NewLine;
+                        throw new ArgumentNullException("entity");
                     }
+                    this.Entities.Add(entity);
+                    this._context.SaveChanges();
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    var msg = string.Empty;
+
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            msg += string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage) + Environment.NewLine;
+                        }
+                    }
+
+                    var fail = new Exception(msg, dbEx);
+                    throw fail;
                 }
 
-                var fail = new Exception(msg, dbEx);
-                throw fail;
-            }
+            
         }
 
         public void Update(T entity)
@@ -111,6 +115,8 @@ namespace Backend.ServiceInterface.Repository
                 throw fail;
             }
         }
+
+        
 
         public virtual IQueryable<T> Table
         {

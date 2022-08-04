@@ -11,6 +11,6 @@ namespace Backend.ServiceInterface.context
     public interface IDbContext 
     {
         IDbSet<TEntity> Set<TEntity>() where TEntity: BaseEntity;
-        int SaveChanges();
+        int SaveChanges();       
     }
 }

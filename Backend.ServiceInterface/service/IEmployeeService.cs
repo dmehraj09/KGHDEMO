@@ -11,11 +11,11 @@ namespace Backend.ServiceInterface.service
     public interface IEmployeeService
     {
         EmployeeResonseDto GetEmployees();
-        int PostEmployee(EmployeeRequestDto Dto);
+        void PostEmployee(EmployeeRequestDto dto);
 
-        int UpdateEmployee(EmployeeRequestDto Dto);
+        void UpdateEmployee(EmployeeRequestDto dto);
 
-        int DeleteEmployee(EmployeeRequestDto Dto);
+        void DeleteEmployee(EmployeeRequestDto dto);
 
     }
 }

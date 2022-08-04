@@ -7,8 +7,8 @@ namespace Backend.Repository
     {
         IEnumerable<Employee> GetEmployees();      
 
-        int PostEmployee(Employee _postObj);
-        int UpdateEmployee(Employee Dto);
-        int DeleteEmployee(Employee Dto);
+        void PostEmployee(Employee postObj);
+        void UpdateEmployee(Employee dto);
+        void DeleteEmployee(Employee dto);
     }
 }

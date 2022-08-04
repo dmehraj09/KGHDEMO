@@ -25,24 +25,22 @@ namespace Backend.Repository
             
         }
 
-        public int PostEmployee(Employee _postObj)
+        public void PostEmployee(Employee postObj)
         {
-            employeeRep.Insert(_postObj);
-            return 1;
+            employeeRep.Insert(postObj);           
             
         }
 
-        public int UpdateEmployee(Employee Dto)
+        public void UpdateEmployee(Employee dto)
         {
-            employeeRep.Update(Dto);
-            return 1;
+            employeeRep.Update(dto);
+            
 
         }
 
-        public int DeleteEmployee(Employee Dto)
+        public void DeleteEmployee(Employee dto)
         {
-            employeeRep.Delete(Dto);
-            return 1;
+            employeeRep.Delete(dto);           
         }        
     }
 }
