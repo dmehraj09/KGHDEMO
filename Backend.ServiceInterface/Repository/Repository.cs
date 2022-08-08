@@ -13,11 +13,11 @@ namespace Backend.ServiceInterface.Repository
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        private IDbContext _context;
+        private EmployeeContext _context;
         private IDbSet<T> _entities;
         private bool _isDisposed;
 
-        public Repository(IDbContext context)
+        public Repository(EmployeeContext context)
         {
             this._context = context;
             _entities = context.Set<T>();
@@ -30,7 +30,8 @@ namespace Backend.ServiceInterface.Repository
 
         public void Insert(T entity)
         {
-            
+            using (var transaction = this._context.Database.BeginTransaction())
+            {
                 try
                 {
                     if (entity == null)
@@ -39,9 +40,11 @@ namespace Backend.ServiceInterface.Repository
                     }
                     this.Entities.Add(entity);
                     this._context.SaveChanges();
+                    transaction.Commit();
                 }
                 catch (DbEntityValidationException dbEx)
                 {
+                    transaction.Rollback();
                     var msg = string.Empty;
 
                     foreach (var validationErrors in dbEx.EntityValidationErrors)
@@ -55,64 +58,77 @@ namespace Backend.ServiceInterface.Repository
                     var fail = new Exception(msg, dbEx);
                     throw fail;
                 }
+            }
 
             
         }
 
         public void Update(T entity)
         {
-            try
+            using (var transaction = this._context.Database.BeginTransaction())
             {
-                if (entity == null)
+                try
                 {
-                    throw new ArgumentNullException("entity");
-                }
-                
-                //this.Entities.Attach(entity);
-                _context.Set<T>().AddOrUpdate(entity);
-                this._context.SaveChanges();
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                var msg = string.Empty;
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
+                    if (entity == null)
                     {
-                        msg += Environment.NewLine + string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        throw new ArgumentNullException("entity");
                     }
+
+                    //this.Entities.Attach(entity);
+                    _context.Set<T>().AddOrUpdate(entity);
+                    this._context.SaveChanges();
+                    transaction.Commit();
                 }
-                var fail = new Exception(msg, dbEx);
-                throw fail;
+                catch (DbEntityValidationException dbEx)
+                {
+                    transaction.Rollback();
+                    var msg = string.Empty;
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            msg += Environment.NewLine + string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    var fail = new Exception(msg, dbEx);
+                    throw fail;
+                }
+
             }
         }
 
         public void Delete(T entity)
         {
-            try
+            using (var transaction = this._context.Database.BeginTransaction())
             {
-                if (entity == null)
+                try
                 {
-                    throw new ArgumentNullException("entity");
-                }
-
-                var p = this.Entities.SingleOrDefault(x => x.Id == entity.Id);
-                this.Entities.Remove(p);
-                this._context.SaveChanges();
-            }
-            catch (DbEntityValidationException dbEx)
-            {
-                var msg = string.Empty;
-
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
+                    if (entity == null)
                     {
-                        msg += Environment.NewLine + string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        throw new ArgumentNullException("entity");
                     }
+
+                    var p = this.Entities.SingleOrDefault(x => x.Id == entity.Id);
+                    this.Entities.Remove(p);
+                    this._context.SaveChanges();
+                    transaction.Commit();
                 }
-                var fail = new Exception(msg, dbEx);
-                throw fail;
+                catch (DbEntityValidationException dbEx)
+                {
+                    transaction.Rollback();
+                    var msg = string.Empty;
+
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            msg += Environment.NewLine + string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    var fail = new Exception(msg, dbEx);
+                    throw fail;
+                }
+
             }
         }
 

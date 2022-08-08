@@ -36,9 +36,6 @@ public class AppHost : AppHostBase, IHostingStartup
 
         Database.SetInitializer<EmployeeContext>
             (new CreateDatabaseIfNotExists<EmployeeContext>());
-        
-
-        container.RegisterAs<EmployeeContext, IDbContext>();
         container.RegisterAs<Backend.ServiceInterface.Repository.Repository<Employee>, Backend.ServiceInterface.Repository.IRepository<Employee>>();
         container.RegisterAs<EmployeeRepo, IEmployeeRepo>();
         container.RegisterAs<EmployeeService, IEmployeeService>();
