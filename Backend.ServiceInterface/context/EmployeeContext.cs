@@ -9,7 +9,7 @@ using System.Web;
 
 namespace Backend.ServiceInterface.context
 {
-    public class EmployeeContext : DbContext, IDbContext
+    public class EmployeeContext : DbContext
     {
         // Database Instance Name
 
