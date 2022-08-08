@@ -7,12 +7,22 @@
     <TypeScriptToolsVersion>latest</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="src\components\NewFolder1\**" />
+    <Content Remove="src\components\NewFolder1\**" />
+    <EmbeddedResource Remove="src\components\NewFolder1\**" />
+    <None Remove="src\components\NewFolder1\**" />
+    <TypeScriptCompile Remove="src\components\NewFolder1\**" />
+  </ItemGroup>
   <ItemGroup>
     <Using Include="Backend" />
     <Using Include="ServiceStack" />
   </ItemGroup>
   
   <ItemGroup>
+    <Folder Include="src\components\Admin\" />
+    <Folder Include="src\components\NewFolder\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

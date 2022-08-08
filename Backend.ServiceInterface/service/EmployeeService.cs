@@ -21,15 +21,16 @@ namespace Backend.ServiceInterface.service
         {
             EmployeeResonseDto employeeResonseDto = new EmployeeResonseDto();
             IEnumerable <Employee>  obj = Enumerable.Empty<Employee>();            
-            obj =  repository.GetEmployees();     
-            employeeResonseDto.Employees = obj.Select(x => new EmployeeRequestDto
+            obj =  repository.GetEmployees();
+            List<EmployeeRequestDto> employeeRequestDtos = obj.Select(x => new EmployeeRequestDto
             {
                 Id = x.Id,
                 Designation = x.Designation,
                 Address = x.Address,
                 Mobile = x.Mobile,
                 Name = x.Name,
-            });
+            }).ToList();
+            employeeResonseDto.Employees = employeeRequestDtos;
             return employeeResonseDto;
         }
 

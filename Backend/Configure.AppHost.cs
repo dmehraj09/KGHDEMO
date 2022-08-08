@@ -23,6 +23,7 @@ public class AppHost : AppHostBase, IHostingStartup
 
     public AppHost() : base("Backend", typeof(MyServices).Assembly) {}
 
+
     
     public override void Configure(Container container)
     {
@@ -30,8 +31,9 @@ public class AppHost : AppHostBase, IHostingStartup
         Plugins.Add(new SharpPagesFeature {
             EnableSpaFallback = true
         });
+
         
-        
+
         Database.SetInitializer<EmployeeContext>
             (new CreateDatabaseIfNotExists<EmployeeContext>());
         

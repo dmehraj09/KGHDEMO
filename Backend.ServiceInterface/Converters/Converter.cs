@@ -14,6 +14,7 @@ namespace Backend.ServiceInterface.Converters
         {
             return new Employee
             {
+                Id = dto.Id,
                 Address = dto.Address,
                 Designation = dto.Designation,
                 Name = dto.Name,

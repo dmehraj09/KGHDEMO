@@ -1,206 +1,92 @@
-﻿<template>  
-    <div id="container" style="height:auto">
-        <div id="employee-details">
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Designation</th>
-                        <th>Mobile</th>
-                        <th>Address</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="employee in employees.employees" :key="employee.id">
-                        <td v-if="editing === employee.id">
-                            <input type="text" v-model="employee.name" />
-                        </td>
-                        <td v-else>{{ employee.name }}</td>
+﻿<template>
+    <div id="app" class="small-container">
+        <h1>Employee Details</h1>
+        <employee-form @add:employee="addEmployee" />
 
-                        <td v-if="editing === employee.id">
-                            <input type="text" v-model="employee.designation" />
-                        </td>
-                        <td v-else>{{ employee.designation }}</td>
-                        <td v-if="editing === employee.id">
-                            <input type="text" v-model="employee.mobile" />
-                        </td>
-                        <td v-else>{{ employee.mobile }}</td>
-                        <td v-if="editing === employee.id">
-                            <input type="text" v-model="employee.address" />
-                        </td>
-                        <td v-else>{{ employee.address }}</td>
-
-                        <td v-if="editing === employee.id">
-                        <button @click="editEmployee(employee)">Save</button>
-                        <button @click="cancelEdit(employee)" class="muted-button">Cancel</button>
-                    </td>
-
-                    <td v-else>
-                        <button @click="editMode(employee)">Edit</button>
-                        <button @click="deleteEmployee(employee)" class="delete-button">Delete</button>
-                    </td> 
-
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div style="height:50px"></div>
-
-        <div id="employee-form"  style="margin-top:50px;width:350px">
-            <form @submit.prevent="submit" :class="{ error:responseStatus, loading }">
-                <div class="mb-3">
-                    <label>Employee Name</label>
-                    <v-input ref="first" v-model="name" :responseStatus="responseStatus" />
-                </div>
-                <div class="mb-3">
-                    <label>Employee Designation</label>
-                    <v-input v-model="designation" :responseStatus="responseStatus" />
-                </div>
-                <div class="mb-3">
-                    <label>Employee Mobile</label>
-                    <v-input v-model="mobile" :responseStatus="responseStatus" />
-                </div>
-                <div class="mb-3">
-                    <label>Employee Address</label>
-                    <v-input v-model="address" :responseStatus="responseStatus" />
-                </div>
-                <div class="mb-3">
-                    <p v-if="error && submitting" class="error-message">
-                        ❗Please fill out all required fields and valid email address
-                    </p>
-                    <p v-if="success" class="success-message">
-                        ✅ Employee successfully added
-                    </p>
-                </div>
-                <div class="mb-3">
-                    <v-button type="submit" lg primary>Add Employee</v-button>
-                </div>
-            </form>
-        </div>
+        <employee-details v-bind:employees="employees"
+                          @edit:employee="editEmployee"
+                          @delete:employee="deleteEmployee" />
     </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
-import { Component, Prop, Watch } from 'vue-property-decorator';
-    import { client, checkAuth } from '../../shared';
-    import { EmployeeRequestDto, EmployeeResonseDto } from '../../shared/dtos';
-    import { Routes, redirect } from '../../shared/router';
+<script>
+    import EmployeeForm from '../Employee/EmployeeForm.vue'
+    import EmployeeDetails from '../Employee/EmployeeDetails.vue'
 
 
-@Component
-export class HelloApi extends Vue {
-    @Prop() public employees: EmployeeResonseDto;
-    public txtName: string = '';
-    public result: string = '';
-    public editing: string = '';
+    export default {
+        name: 'HelloApi',
+        components: {
+            EmployeeDetails,
+            EmployeeForm,
+        },
+        data() {
+            return {
+                employees: [],
+            }
+        },
+        methods: {
+            async addEmployee(employee) {
+                try {
+                    const response = await fetch('https://localhost:5001/employees', {
+                        method: 'POST',
+                        body: JSON.stringify(employee),
+                        headers: { "Content-type": "application/json; charset=UTF-8" }
+                    });                    
+                    this.getEmployees()
+                } catch (error) {
+                    console.error('Error occured while adding employee: ' + error)
+                }
+            },
 
-    public mounted() {
-        this.GetData();
-    }
+            async getEmployees() {
+                try {
+                    console.log("Test");
+                    const response = await fetch(`https://localhost:5001/employees.json`, {
+                        mode: 'no-cors',
+                    });
+                    const data = await response.json()
+                    this.employees = data.employees
+                    console.log(data.employees);
+                } catch (error) {
+                }
+            },
 
-    name = '';
-    designation = '';
-    mobile = '';
-    address = '';   
-    loading = false;
-    responseStatus = null;
-    submitting = false;
-    error = false;
-    success = false;
+            async editEmployee(id, updatedEmployee) {
+                try {
+                    const response = await fetch(`https://localhost:5001/employees/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(updatedEmployee),
+                        headers: { "Content-type": "application/json; charset=UTF-8" }
+                    });
 
-    async submit() {
-        try {
-            this.loading = true;
-            this.responseStatus = null;
+                    const data = await response.json()
+                    this.employees = this.employees.map(employee => (employee.id === id ? data : employee))
 
-            const response = await client.post(new EmployeeRequestDto({
-                Name: this.name,
-                Address: this.address,
-                Designation: this.designation,
-                Mobile: this.mobile
-            }));
-            this.name = '';
-            this.designation = '';
-            this.mobile = '';
-            this.address = '';
-            this.error = false;
-            this.success = true;
-            this.submitting = false;
-            this.GetData();
+                } catch (error) {
+                    console.error('Error while editing: ', +error)
+                }
+            },
 
-
-        } catch (e: any) {
-            this.responseStatus = e.responseStatus || e;
-        } finally {
-            this.loading = false;
+            async deleteEmployee(id) {
+                try {
+                    await fetch(`https://localhost:5001/employees/${id}`, {
+                        method: 'DELETE'                       
+                    });
+                    this.employees = this.employees.filter(employee => employee.id !== id);
+                } catch (error) {
+                    console.error('Error while deleting: ', +error);
+                }
+            },
+        },
+        mounted() {
+            this.getEmployees()
         }
-    }
- 
 
-    public async GetData() {       
-        const r = await client.get(new EmployeeRequestDto());
-        console.log(r);
-        console.log("Text");
-        this.employees = r;
-        console.log(this.employees);
-        
     }
-
-    public async editMode(employee: any) {
-        this.editing = employee.id
-    }
-    public async cancelEdit(employee: any) {
-        this.editing = '';
-    }
-
-    public async editEmployee(employee: any) {
-        if (employee.name === '') return
-        const response = await client.put(new EmployeeRequestDto({
-            Id: employee.id,
-             Name: employee.name,
-            Address: employee.address,
-            Designation: employee.designation,
-            Mobile: employee.mobile
-        }));           
-        this.editing = '';
-        this.GetData();   
-    }
-
-
-    public async deleteEmployee(employee: any) {
-        const response = await client.delete(new EmployeeRequestDto({
-            Id: employee.id,
-            Name: employee.name,
-            Address: employee.address,
-            Designation: employee.designation,
-            Mobile: employee.mobile
-        }));
-        this.editing = '';
-        this.GetData();
-    }
-}
-export default HelloApi;
 </script>
 
 <style>
-    form {
-        margin-bottom: 2rem;
-    }
-
-    [class*='-message'] {
-        font-weight: 500;
-    }
-
-    .error-message {
-        color: #d33c40;
-    }
-
-    .success-message {
-        color: #32a95d;
-    }
 
     #employee-details {
         width: 100%;
@@ -217,7 +103,7 @@ export default HelloApi;
     }
 
     .small-container {
-        max-width: 720px;
+        max-width: 1000px;
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -226,15 +112,5 @@ export default HelloApi;
         margin-top: 10px;
         margin-left: 10px;
     }
-    button {
-        margin: 0 0.5rem 0 0;
-    }
-
-    input {
-        margin: 0;
-    }
-
-    .empty-table {
-        text-align: center;
-    }
 </style>
+

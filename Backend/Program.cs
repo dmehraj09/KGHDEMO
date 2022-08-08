@@ -1,6 +1,19 @@
 ﻿using FluentAssertions.Common;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:8080/",
+                                             "https://localhost:5001/",
+                                              "http://www.contoso.com");
+                      });
+});
 
 var app = builder.Build();
 
@@ -13,6 +26,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
     app.UseHttpsRedirection();
 }
+
 
 app.UseServiceStack(new AppHost());
 
