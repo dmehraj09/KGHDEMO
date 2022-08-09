@@ -20,27 +20,64 @@ namespace Backend.Repository
         
 
         public IEnumerable<Employee> GetEmployees()
-        {
-            return employeeRep.Get();
-            
+        {            
+            try
+            {
+                return employeeRep.Get();
+            }
+            catch (System.Exception ex)
+            {                
+                throw;
+            }
+
         }
 
         public void PostEmployee(Employee postObj)
         {
-            employeeRep.Insert(postObj);           
-            
+            employeeRep.CreateTransaction();
+            try
+            {
+                employeeRep.Insert(postObj);
+                employeeRep.Save();
+                employeeRep.Commit();
+            }
+            catch (System.Exception ex)
+            {
+                employeeRep.Rollback();
+            }
+
         }
 
-        public void UpdateEmployee(Employee dto)
+        public void UpdateEmployee(Employee postObj)
         {
-            employeeRep.Update(dto);
-            
+            employeeRep.CreateTransaction();
+            try
+            {
+                employeeRep.Update(postObj);
+                employeeRep.Save();
+                employeeRep.Commit();
+            }
+            catch (System.Exception ex)
+            {
+                employeeRep.Rollback();
+            }
+
 
         }
 
-        public void DeleteEmployee(Employee dto)
+        public void DeleteEmployee(Employee postObj)
         {
-            employeeRep.Delete(dto);           
+            employeeRep.CreateTransaction();
+            try
+            {
+                employeeRep.Delete(postObj);
+                employeeRep.Save();
+                employeeRep.Commit();
+            }
+            catch (System.Exception ex)
+            {
+                employeeRep.Rollback();
+            }
         }        
     }
 }

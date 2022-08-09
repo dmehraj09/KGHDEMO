@@ -11,6 +11,10 @@ namespace Backend.ServiceInterface.Repository
         void Insert(T entity);
         void Update(T entity);
         void Delete(T entity);
+        void Save();
+        void CreateTransaction();
+        void Commit();
+        void Rollback();
         IQueryable<T> Table { get; }
     }
 }

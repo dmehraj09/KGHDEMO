@@ -7,50 +7,58 @@ using Backend.ServiceInterface.Converters;
 
 namespace Backend.ServiceInterface.service
 {
-    
+
     public class EmployeeService : IEmployeeService
     {
-        private readonly IEmployeeRepo repository;
+        private readonly IEmployeeRepo empRepo;  
+        //private readonly IRepository<Employee> empRepo;
 
-        public EmployeeService(IEmployeeRepo rep)
+
+        public EmployeeService(IEmployeeRepo repo)
         {
-            this.repository = rep;
-        }       
+            
+            empRepo = repo;
+        }
 
         public EmployeeResonseDto GetEmployees()
         {
-            EmployeeResonseDto employeeResonseDto = new EmployeeResonseDto();
-            IEnumerable <Employee>  obj = Enumerable.Empty<Employee>();            
-            obj =  repository.GetEmployees();
-            List<EmployeeRequestDto> employeeRequestDtos = obj.Select(x => new EmployeeRequestDto
-            {
-                Id = x.Id,
-                Designation = x.Designation,
-                Address = x.Address,
-                Mobile = x.Mobile,
-                Name = x.Name,
-            }).ToList();
-            employeeResonseDto.Employees = employeeRequestDtos;
-            return employeeResonseDto;
+            
+                    EmployeeResonseDto employeeResonseDto = new EmployeeResonseDto();
+                    IEnumerable<Employee> obj = Enumerable.Empty<Employee>();
+                    obj = empRepo.GetEmployees();
+                    List<EmployeeRequestDto> employeeRequestDtos = obj.Select(x => new EmployeeRequestDto
+                    {
+                        Id = x.Id,
+                        Designation = x.Designation,
+                        Address = x.Address,
+                        Mobile = x.Mobile,
+                        Name = x.Name,
+                    }).ToList();
+                    employeeResonseDto.Employees = employeeRequestDtos;                    
+                    return employeeResonseDto;
         }
+
 
 
         public void PostEmployee(EmployeeRequestDto dto)
         {            
-            repository.PostEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
+            empRepo.PostEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));              
+
         }
 
         
 
         public void UpdateEmployee(EmployeeRequestDto dto)
         {
-            
-            repository.UpdateEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
+              empRepo.UpdateEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
+                
         }
 
         public void DeleteEmployee(EmployeeRequestDto dto)
         {
-          repository.DeleteEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));
+            
+             empRepo.DeleteEmployee(Converter.ConvertEmployeeRequestDtoToEmployee(dto));              
+
         }
 
        
